@@ -45,14 +45,19 @@ export default class Main extends Component {
     this.loadWallpapers();
   }
 
-  renderItem = (image) => {
+  renderItem = ({ item }) => {
     return (
-      <View style={{ height, width }}>
-        <Image
-          style={styles.renderImage}
-          source={{ uri: image.urls.regular }}
-          resizeMode="cover"
-        />
+      <View style={{ flex: 1 }}>
+        <View style={styles.renderContainer}>
+          <ActivityIndicator size="large" color="grey" />
+        </View>
+        <View style={{ height, width }}>
+          <Image
+            style={styles.renderImage}
+            source={{ uri: item.urls.regular }}
+            resizeMode="cover"
+          />
+        </View>
       </View>
     );
   };
@@ -68,7 +73,7 @@ export default class Main extends Component {
           horizontal
           pagingEnabled
           data={this.state.images}
-          renderItem={({ item }) => this.renderItem(item)}
+          renderItem={this.renderItem}
           keyExtractor={(item) => item.id}
         />
       </View>
@@ -86,6 +91,16 @@ const styles = StyleSheet.create({
   loading: {
     flex: 1,
     backgroundColor: "black"
+  },
+  renderContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "black",
+    alignItems: "center",
+    justifyContent: "center"
   },
   renderImage: {
     flex: 1,
