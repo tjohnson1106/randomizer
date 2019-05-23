@@ -67,6 +67,10 @@ export default class Main extends Component {
           Animated.spring(this.state.scale, {
             toValue: 0.9
           }).start();
+        } else {
+          Animated.spring(this.state.scale, {
+            toValue: 1
+          }).start();
         }
       }
     );
@@ -79,13 +83,13 @@ export default class Main extends Component {
           <ActivityIndicator size="large" color="grey" />
         </View>
         <TouchableWithoutFeedback onPress={() => this.showsControls(item)}>
-          <View style={{ height, width }}>
+          <Animated.View style={[{ height, width }, this.scale]}>
             <Image
               style={styles.renderImage}
               source={{ uri: item.urls.regular }}
               resizeMode="cover"
             />
-          </View>
+          </Animated.View>
         </TouchableWithoutFeedback>
       </View>
     );
