@@ -6,7 +6,9 @@ import {
   ActivityIndicator,
   FlatList,
   Dimensions,
-  Image
+  Image,
+  Animated,
+  TouchableWithoutFeedback
 } from "react-native";
 import axios from "axios";
 
@@ -15,7 +17,17 @@ const { height, width } = Dimensions.get("window");
 export default class Main extends Component {
   state = {
     isLoading: true,
-    images: []
+    images: [],
+    scale: new Animated.Value(1),
+    isImageFocused: false
+  };
+
+  scale = {
+    transform: [
+      {
+        scale: this.state.scale
+      }
+    ]
   };
 
   loadWallpapers = () => {
@@ -45,19 +57,36 @@ export default class Main extends Component {
     this.loadWallpapers();
   }
 
+  showsControls = () => {
+    this.setState(
+      (state) => ({
+        isImageFocused: !state.isImageFocused
+      }),
+      () => {
+        if (this.state.isImageFocused) {
+          Animated.spring(this.state.scale, {
+            toValue: 0.9
+          }).start();
+        }
+      }
+    );
+  };
+
   renderItem = ({ item }) => {
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.renderContainer}>
           <ActivityIndicator size="large" color="grey" />
         </View>
-        <View style={{ height, width }}>
-          <Image
-            style={styles.renderImage}
-            source={{ uri: item.urls.regular }}
-            resizeMode="cover"
-          />
-        </View>
+        <TouchableWithoutFeedback onPress={() => this.showsControls(item)}>
+          <View style={{ height, width }}>
+            <Image
+              style={styles.renderImage}
+              source={{ uri: item.urls.regular }}
+              resizeMode="cover"
+            />
+          </View>
+        </TouchableWithoutFeedback>
       </View>
     );
   };
