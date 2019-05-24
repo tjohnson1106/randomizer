@@ -8,27 +8,37 @@ import {
   Dimensions,
   Image,
   Animated,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  TouchableOpacity
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 
 const { height, width } = Dimensions.get("window");
 
 export default class Main extends Component {
-  state = {
-    isLoading: true,
-    images: [],
-    scale: new Animated.Value(1),
-    isImageFocused: false
-  };
+  constructor() {
+    super();
+    this.state = {
+      isLoading: true,
+      images: [],
+      scale: new Animated.Value(1),
+      isImageFocused: false
+    };
 
-  scale = {
-    transform: [
-      {
-        scale: this.state.scale
-      }
-    ]
-  };
+    this.scale = {
+      transform: [
+        {
+          scale: this.state.scale
+        }
+      ]
+    };
+
+    this.actionBarY = this.state.scale.interpolate({
+      inputRange: [0.9, 1],
+      outputRange: [0, -80]
+    });
+  }
 
   loadWallpapers = () => {
     axios
@@ -91,6 +101,34 @@ export default class Main extends Component {
             />
           </Animated.View>
         </TouchableWithoutFeedback>
+        <Animated.View
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: this.actionBarY,
+            height: 80,
+            backgroundColor: "black",
+            flexDirection: "row",
+            justifyContent: "space-around"
+          }}
+        >
+          <View style={styles.iconContainer}>
+            <TouchableOpacity activeOpacity={0.5} onPress={this.loadWallpapers()}>
+              <Ionicons name="ios-refresh" color="white" size={40} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity activeOpacity={0.5} onPress={() => alert("load images")}>
+              <Ionicons name="ios-share" color="white" size={40} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity activeOpacity={0.5} onPress={this.saveToCameraRoll()}>
+              <Ionicons name="ios-save" color="white" size={40} />
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
       </View>
     );
   };
@@ -103,6 +141,7 @@ export default class Main extends Component {
     ) : (
       <View style={styles.loading}>
         <FlatList
+          scrollEnabled={!this.state.isImageFocused}
           horizontal
           pagingEnabled
           data={this.state.images}
@@ -139,6 +178,11 @@ const styles = StyleSheet.create({
     flex: 1,
     height: null,
     width: null
+  },
+  iconContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
   }
 });
 
